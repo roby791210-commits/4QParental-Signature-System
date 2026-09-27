@@ -1,176 +1,189 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>舊社國小 4Q 家長現場簽到</title>
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #F0F4F8;
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      justify-content: center;
-    }
-    .card {
-      background: #FFFFFF;
-      width: 100%;
-      max-width: 420px;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      padding: 22px;
-      text-align: center;
-    }
-    h2 { color: #00695C; margin: 0 0 16px 0; font-size: 20px; }
-    .form-group { text-align: left; margin-bottom: 12px; }
-    label { display: block; font-weight: bold; font-size: 14px; color: #374151; margin-bottom: 6px; }
-    select {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #D1D5DB;
-      background-color: #FAFAFA;
-    }
-    .radio-group { display: flex; gap: 10px; }
-    .radio-label {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      border: 1.5px solid #D1D5DB;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      color: #4B5563;
-    }
-    .radio-label input { display: none; }
-    .radio-label.active { border-color: #00695C; background-color: #E0F2F1; color: #00695C; }
-    .canvas-container {
-      border: 2px dashed #00695C;
-      border-radius: 10px;
-      width: 100%;
-      height: 190px;
-      background-color: #FAFCFC;
-      margin-top: 8px;
-      touch-action: none;
-    }
-    canvas { width: 100%; height: 100%; border-radius: 8px; }
-    .btn-row { display: flex; gap: 10px; margin-top: 18px; }
-    button {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-clear { background-color: #E5E7EB; color: #374151; }
-    .btn-submit { background-color: #00695C; color: #FFFFFF; }
-    .btn-submit:disabled { background-color: #9CA3AF; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>舊社國小 4Q 家長簽到退</h2>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>家長簽到退系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: #F4F6F8;
+        margin: 0;
+        padding: 16px;
+        display: flex;
+        justify-content: center;
+      }
+      .card {
+        background: #FFFFFF;
+        width: 100%;
+        max-width: 440px;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        padding: 24px;
+        text-align: center;
+      }
+      h2 {
+        color: #005F56;
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 20px;
+      }
+      .form-group {
+        text-align: left;
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        color: #333333;
+        margin-bottom: 6px;
+      }
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 15px;
+        border-radius: 8px;
+        border: 1px solid #D1D5DB;
+        background-color: #FAFAFA;
+        outline: none;
+      }
+      select:focus {
+        border-color: #00796B;
+        background-color: #FFF;
+      }
+      .radio-group {
+        display: flex;
+        gap: 12px;
+      }
+      .radio-label {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: 1.5px solid #D1D5DB;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+        color: #4B5563;
+        transition: all 0.2s;
+      }
+      .radio-label input {
+        display: none;
+      }
+      .radio-label.active {
+        border-color: #00796B;
+        background-color: #E6F4F1;
+        color: #00796B;
+      }
+      .canvas-title {
+        font-size: 13px;
+        color: #6B7280;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        text-align: left;
+      }
+      .canvas-container {
+        border: 2px dashed #00796B;
+        border-radius: 10px;
+        width: 100%;
+        height: 190px;
+        background-color: #FCFDFD;
+        position: relative;
+        touch-action: none;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+      }
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      button {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      button:active {
+        opacity: 0.8;
+      }
+      .btn-clear {
+        background-color: #E5E7EB;
+        color: #374151;
+      }
+      .btn-submit {
+        background-color: #00796B;
+        color: #FFFFFF;
+      }
+      .btn-submit:disabled {
+        background-color: #9CA3AF;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>舊社國小 4Q 家長簽到退</h2>
 
-    <div class="form-group">
-      <label for="parentSelect">👤 陪同家長姓名</label>
-      <select id="parentSelect">
-        <option value="">正在載入名單...</option>
-      </select>
-    </div>
+      <!-- 1. 選擇家長姓名 -->
+      <div class="form-group">
+        <label for="parentSelect">👤 陪同家長姓名</label>
+        <select id="parentSelect">
+          <option value="">正在載入名單...</option>
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="dateSelect">📅 活動日期</label>
-      <select id="dateSelect">
-        <option value="10/03">10/03 (第 1 次)</option>
-        <option value="11/07">11/07 (第 2 次)</option>
-        <option value="12/26">12/26 (第 3 次)</option>
-        <option value="01/09">01/09 (第 4 次)</option>
-      </select>
-    </div>
+      <!-- 2. 選擇日期 -->
+      <div class="form-group">
+        <label for="dateSelect">📅 活動日期</label>
+        <select id="dateSelect">
+          <option value="10/03">10/03 (第 1 次)</option>
+          <option value="11/07">11/07 (第 2 次)</option>
+          <option value="12/26">12/26 (第 3 次)</option>
+          <option value="01/09">01/09 (第 4 次)</option>
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label>📝 簽署項目</label>
-      <div class="radio-group">
-        <label class="radio-label active" id="labelIn">
-          <input type="radio" name="signType" value="簽到" checked onchange="updateRadioUI()"> ✅ 簽到
-        </label>
-        <label class="radio-label" id="labelOut">
-          <input type="radio" name="signType" value="簽退" onchange="updateRadioUI()"> 🚪 簽退
-        </label>
+      <!-- 3. 選擇簽到或簽退 -->
+      <div class="form-group">
+        <label>📝 簽署項目</label>
+        <div class="radio-group">
+          <label class="radio-label active" id="labelIn">
+            <input type="radio" name="signType" value="簽到" checked onchange="updateRadioUI()"> ✅ 簽到
+          </label>
+          <label class="radio-label" id="labelOut">
+            <input type="radio" name="signType" value="簽退" onchange="updateRadioUI()"> 🚪 簽退
+          </label>
+        </div>
+      </div>
+
+      <!-- 4. 手寫簽名板 -->
+      <div class="canvas-title">✍️ 請在下方框格內親自手寫簽名：</div>
+      <div class="canvas-container">
+        <canvas id="signature-pad"></canvas>
+      </div>
+
+      <!-- 按鈕區 -->
+      <div class="btn-row">
+        <button type="button" class="btn-clear" onclick="signaturePad.clear()">清除重寫</button>
+        <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()">確認送出</button>
       </div>
     </div>
 
-    <div style="text-align: left; font-size: 13px; color: #6B7280; margin-top: 10px;">✍️ 請在框格內手寫簽名：</div>
-    <div class="canvas-container">
-      <canvas id="signature-pad"></canvas>
-    </div>
-
-    <div class="btn-row">
-      <button type="button" class="btn-clear" onclick="signaturePad.clear()">清除重簽</button>
-      <button type="button" class="btn-submit" id="submitBtn" onclick="submitData()">確認送出</button>
-    </div>
-  </div>
-
-  <script>
-    // ⚠️ 請在此處填入您部署的 Apps Script Web App 網址 ⚠️
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwfLxjTRcD75EAMDdFXW1bqh-ygJ5ngv3904Be81bkDcNlkzzCYE6pbY-FJ6F5av2l_/exec";
-
-    const canvas = document.getElementById('signature-pad');
-    let signaturePad;
-
-    function resizeCanvas() {
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      canvas.getContext("2d").scale(ratio, ratio);
-      if (signaturePad) signaturePad.clear();
-    }
-    window.addEventListener("resize", resizeCanvas);
-
-    window.onload = function() {
-      resizeCanvas();
-      signaturePad = new SignaturePad(canvas, {
-        penColor: "#111827",
-        minWidth: 1.5,
-        maxWidth: 3.5
-      });
-
-      // 從後端非同步取得名冊
-      fetch(GAS_URL)
-        .then(res => res.json())
-        .then(result => {
-          const select = document.getElementById('parentSelect');
-          select.innerHTML = '<option value="">-- 請選擇家長姓名 --</option>';
-          if (result.data && result.data.length > 0) {
-            result.data.forEach(name => {
-              const opt = document.createElement('option');
-              opt.value = name;
-              opt.textContent = name;
-              select.appendChild(opt);
-            });
-          }
-        })
-        .catch(err => {
-          document.getElementById('parentSelect').innerHTML = '<option value="">(名單載入失敗)</option>';
-        });
-    };
-
-    function updateRadioUI() {
-      const radios = document.getElementsByName('signType');
-      document.getElementById('labelIn').classList.toggle('active', radios[0].checked);
-      document.getElementById('labelOut').classList.toggle('active', radios[1].checked);
-    }
-
-    function submitData() {
+    <script>
+     function submitData() {
       const parentName = document.getElementById('parentSelect').value;
       const sessionDate = document.getElementById('dateSelect').value;
       const signType = document.querySelector('input[name="signType"]:checked').value;
@@ -195,24 +208,31 @@
         signatureDataUrl: signaturePad.toDataURL("image/png")
       };
 
+      // 💡 修正點：移除 no-cors，改用 text/plain 避免 CORS 預檢失敗，並正常讀取 JSON 回應
       fetch(GAS_URL, {
         method: "POST",
-        mode: "no-cors", // 關鍵：完全避開所有瀏覽器的跨域阻擋與 Cookie 檢查！
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       })
-      .then(() => {
+      .then(res => res.json())
+      .then(result => {
         submitBtn.disabled = false;
         submitBtn.textContent = '確認送出';
-        alert('✅ 簽到完成！字跡已傳送至試算表。');
-        signaturePad.clear();
+        if (result.status === "success") {
+          alert('✅ 簽到完成！字跡已成功傳送至試算表。');
+          signaturePad.clear();
+        } else {
+          alert('❌ 傳送失敗：' + (result.message || '未知錯誤'));
+        }
       })
       .catch(err => {
         submitBtn.disabled = false;
         submitBtn.textContent = '確認送出';
-        alert('傳送失敗：' + err.message);
+        alert('⚠️ 網路連線或伺服器回應異常，請再試一次。');
+        console.error(err);
       });
     }
-  </script>
-</body>
+
+    </script>
+  </body>
 </html>
