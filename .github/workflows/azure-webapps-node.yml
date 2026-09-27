@@ -1,78 +1,218 @@
-# This workflow will build and push a node.js application to an Azure Web App when a commit is pushed to your default branch.
-#
-# This workflow assumes you have already created the target Azure App Service web app.
-# For instructions see https://docs.microsoft.com/en-us/azure/app-service/quickstart-nodejs?tabs=linux&pivots=development-environment-cli
-#
-# To configure this workflow:
-#
-# 1. Download the Publish Profile for your Azure Web App. You can download this file from the Overview page of your Web App in the Azure Portal.
-#    For more information: https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
-#
-# 2. Create a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE, paste the publish profile contents as the value of the secret.
-#    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-#
-# 3. Change the value for the AZURE_WEBAPP_NAME. Optionally, change the AZURE_WEBAPP_PACKAGE_PATH and NODE_VERSION environment variables below.
-#
-# For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
-# For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>舊社國小 4Q 家長現場簽到</title>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #F0F4F8;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 22px;
+      text-align: center;
+    }
+    h2 { color: #00695C; margin: 0 0 16px 0; font-size: 20px; }
+    .form-group { text-align: left; margin-bottom: 12px; }
+    label { display: block; font-weight: bold; font-size: 14px; color: #374151; margin-bottom: 6px; }
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #D1D5DB;
+      background-color: #FAFAFA;
+    }
+    .radio-group { display: flex; gap: 10px; }
+    .radio-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      color: #4B5563;
+    }
+    .radio-label input { display: none; }
+    .radio-label.active { border-color: #00695C; background-color: #E0F2F1; color: #00695C; }
+    .canvas-container {
+      border: 2px dashed #00695C;
+      border-radius: 10px;
+      width: 100%;
+      height: 190px;
+      background-color: #FAFCFC;
+      margin-top: 8px;
+      touch-action: none;
+    }
+    canvas { width: 100%; height: 100%; border-radius: 8px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-clear { background-color: #E5E7EB; color: #374151; }
+    .btn-submit { background-color: #00695C; color: #FFFFFF; }
+    .btn-submit:disabled { background-color: #9CA3AF; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>舊社國小 4Q 家長簽到退</h2>
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    <div class="form-group">
+      <label for="parentSelect">👤 陪同家長姓名</label>
+      <select id="parentSelect">
+        <option value="">正在載入名單...</option>
+      </select>
+    </div>
 
-env:
-  AZURE_WEBAPP_NAME: your-app-name    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '20.x'                # set this to the node version to use
+    <div class="form-group">
+      <label for="dateSelect">📅 活動日期</label>
+      <select id="dateSelect">
+        <option value="10/03">10/03 (第 1 次)</option>
+        <option value="11/07">11/07 (第 2 次)</option>
+        <option value="12/26">12/26 (第 3 次)</option>
+        <option value="01/09">01/09 (第 4 次)</option>
+      </select>
+    </div>
 
-permissions:
-  contents: read
+    <div class="form-group">
+      <label>📝 簽署項目</label>
+      <div class="radio-group">
+        <label class="radio-label active" id="labelIn">
+          <input type="radio" name="signType" value="簽到" checked onchange="updateRadioUI()"> ✅ 簽到
+        </label>
+        <label class="radio-label" id="labelOut">
+          <input type="radio" name="signType" value="簽退" onchange="updateRadioUI()"> 🚪 簽退
+        </label>
+      </div>
+    </div>
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+    <div style="text-align: left; font-size: 13px; color: #6B7280; margin-top: 10px;">✍️ 請在框格內手寫簽名：</div>
+    <div class="canvas-container">
+      <canvas id="signature-pad"></canvas>
+    </div>
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+    <div class="btn-row">
+      <button type="button" class="btn-clear" onclick="signaturePad.clear()">清除重簽</button>
+      <button type="button" class="btn-submit" id="submitBtn" onclick="submitData()">確認送出</button>
+    </div>
+  </div>
 
-    - name: npm install, build, and test
-      run: |
-        npm install
-        npm run build --if-present
-        npm run test --if-present
+  <script>
+    // ⚠️ 請在此處填入您部署的 Apps Script Web App 網址 ⚠️
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwfLxjTRcD75EAMDdFXW1bqh-ygJ5ngv3904Be81bkDcNlkzzCYE6pbY-FJ6F5av2l_/exec";
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v4
-      with:
-        name: node-app
-        path: .
+    const canvas = document.getElementById('signature-pad');
+    let signaturePad;
 
-  deploy:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      if (signaturePad) signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
 
-    steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v4
-      with:
-        name: node-app
+    window.onload = function() {
+      resizeCanvas();
+      signaturePad = new SignaturePad(canvas, {
+        penColor: "#111827",
+        minWidth: 1.5,
+        maxWidth: 3.5
+      });
 
-    - name: 'Deploy to Azure WebApp'
-      id: deploy-to-webapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      // 從後端非同步取得名冊
+      fetch(GAS_URL)
+        .then(res => res.json())
+        .then(result => {
+          const select = document.getElementById('parentSelect');
+          select.innerHTML = '<option value="">-- 請選擇家長姓名 --</option>';
+          if (result.data && result.data.length > 0) {
+            result.data.forEach(name => {
+              const opt = document.createElement('option');
+              opt.value = name;
+              opt.textContent = name;
+              select.appendChild(opt);
+            });
+          }
+        })
+        .catch(err => {
+          document.getElementById('parentSelect').innerHTML = '<option value="">(名單載入失敗)</option>';
+        });
+    };
+
+    function updateRadioUI() {
+      const radios = document.getElementsByName('signType');
+      document.getElementById('labelIn').classList.toggle('active', radios[0].checked);
+      document.getElementById('labelOut').classList.toggle('active', radios[1].checked);
+    }
+
+    function submitData() {
+      const parentName = document.getElementById('parentSelect').value;
+      const sessionDate = document.getElementById('dateSelect').value;
+      const signType = document.querySelector('input[name="signType"]:checked').value;
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (!parentName) {
+        alert('請先選擇家長姓名！');
+        return;
+      }
+      if (signaturePad.isEmpty()) {
+        alert('請先在框格內手寫簽名！');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '傳送中...';
+
+      const payload = {
+        parentName: parentName,
+        sessionDate: sessionDate,
+        signType: signType,
+        signatureDataUrl: signaturePad.toDataURL("image/png")
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors", // 關鍵：完全避開所有瀏覽器的跨域阻擋與 Cookie 檢查！
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '確認送出';
+        alert('✅ 簽到完成！字跡已傳送至試算表。');
+        signaturePad.clear();
+      })
+      .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '確認送出';
+        alert('傳送失敗：' + err.message);
+      });
+    }
+  </script>
+</body>
+</html>
